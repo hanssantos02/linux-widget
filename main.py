@@ -4,6 +4,8 @@ from PySide6.QtQuick import QQuickView
 
 def announce_ready():
     print("Timer fired")
+    root = window.rootObject()
+    root.setProperty("airportCode", "MNL")
 
 app = QGuiApplication()
 window = QQuickView()
