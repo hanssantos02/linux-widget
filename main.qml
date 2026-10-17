@@ -6,7 +6,7 @@ Rectangle {
     color: "black"
 
     Text {
-        text: "Airport: " + parent.airportCode
+        text: parent.time
         color: "white"
         font.pixelSize: 28
         anchors.centerIn: parent
@@ -16,5 +16,5 @@ Rectangle {
         onTapped: (eventpoint, button) => console.log("Clock clicked")
     }
 
-    property string airportCode: "CEB"
+    property string time: "--:--:--"
 }

@@ -9,14 +9,15 @@ from exercises.clock_format import format_time
 
 def announce_ready():
     date = datetime.now()
-    print(format_time(date))
+    date_format = format_time(date)
+    print(date_format)
     root = window.rootObject()
-    root.setProperty("airportCode", "MNL")
+    root.setProperty("time", date_format)
 
 app = QGuiApplication()
 window = QQuickView()
 qml_url = QUrl.fromLocalFile("/home/hans/repos/linux-widget/main.qml")
-initial_values = {"airportCode": "DVO"}
+initial_values = {"time": format_time(datetime.now())}
 
 window.setResizeMode(QQuickView.ResizeMode.SizeRootObjectToView)
 window.setInitialProperties(initial_values)
