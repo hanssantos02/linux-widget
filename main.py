@@ -1,9 +1,15 @@
+from datetime import datetime
+
 from PySide6.QtCore import QTimer, QUrl
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtQuick import QQuickView
 
+from exercises.clock_format import format_time
+
+
 def announce_ready():
-    print("Timer fired")
+    date = datetime.now()
+    print(format_time(date))
     root = window.rootObject()
     root.setProperty("airportCode", "MNL")
 
@@ -17,5 +23,7 @@ window.setInitialProperties(initial_values)
 window.setSource(qml_url)
 window.setTitle("test")
 window.show()
-QTimer.singleShot(5000, announce_ready)
+timer = QTimer()
+timer.timeout.connect(announce_ready)
+timer.start(1000)
 app.exec()
