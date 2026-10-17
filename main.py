@@ -9,7 +9,7 @@ from exercises.clock_format import format_time
 
 def announce_ready():
     date = datetime.now()
-    date_format = format_time(date)
+    date_format = format_time(date, False)
     print(date_format)
     root = window.rootObject()
     root.setProperty("time", date_format)
@@ -17,7 +17,7 @@ def announce_ready():
 app = QGuiApplication()
 window = QQuickView()
 qml_url = QUrl.fromLocalFile("/home/hans/repos/linux-widget/main.qml")
-initial_values = {"time": format_time(datetime.now())}
+initial_values = {"time": format_time(datetime.now(), False)}
 
 window.setResizeMode(QQuickView.ResizeMode.SizeRootObjectToView)
 window.setInitialProperties(initial_values)
