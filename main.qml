@@ -12,17 +12,17 @@ Rectangle {
         anchors.centerIn: parent
     }
 
-    Dot {
+    Grid {
         x: 20
         y: 20
-        lit: true
+        columns: 5
+        spacing: 4
+        Repeater {
+            model: 35
+            delegate: Dot {}
+        }
     }
 
-    Dot {
-        x: 44
-        y: 20
-        lit: false
-    }
 
     TapHandler {
         onTapped: (eventpoint, button) => console.log("Clock clicked")
