@@ -4,6 +4,7 @@ Rectangle {
     id: flipTile
 
     property string character: " "
+    property string displayedCharacter: "3"
 
     width: 120
     height: 160
@@ -11,10 +12,11 @@ Rectangle {
     color: "#202020"
 
     Item {
-        id: upperHalf
+        id: upperBack
 
         x: 0
         y: 0
+        z: 0
         width: flipTile.width
         height: flipTile.height / 2
         clip: true
@@ -25,6 +27,36 @@ Rectangle {
             width: flipTile.width
             height: flipTile.height
             text: flipTile.character
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            color: "white"
+            font.pixelSize: 112
+            font.bold: true
+        }
+    }
+
+    Item {
+        id: upperHalf
+
+        x: 0
+        y: 0
+        z: 2
+        width: flipTile.width
+        height: flipTile.height / 2
+        clip: true
+
+        Rectangle {
+            anchors.fill: parent
+            color: flipTile.color
+            radius: flipTile.radius
+        }
+
+        Text {
+            x: 0
+            y: 0
+            width: flipTile.width
+            height: flipTile.height
+            text: flipTile.displayedCharacter
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             color: "white"
@@ -58,7 +90,7 @@ Rectangle {
             y: -parent.height
             width: flipTile.width
             height: flipTile.height
-            text: flipTile.character
+            text: flipTile.displayedCharacter
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             color: "white"
@@ -70,7 +102,7 @@ Rectangle {
     Rectangle {
         x: 0
         y: flipTile.height / 2 - height / 2
-        z: 1
+        z: 3
         width: flipTile.width
         height: 2
         color: "#080808"
