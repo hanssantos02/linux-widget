@@ -19,8 +19,21 @@ Rectangle {
         spacing: 4
         Repeater {
             model: 35
-            delegate: Dot {}
+            delegate: Dot {
+                required property int index
+                property int rowIndex: Math.floor(index / digitGrid.columns)
+                property int columnIndex: index % digitGrid.columns
+                lit: digitGrid.pattern[index] === "1"
+            }
         }
+        id: digitGrid
+        property var pattern:   "01110"
+                              + "10001"
+                              + "10001"
+                              + "10001"
+                              + "10001"
+                              + "10001"
+                              + "01110"
     }
 
 
