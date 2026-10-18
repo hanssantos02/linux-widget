@@ -98,6 +98,8 @@ Rectangle {
         x: 130
         y: 20
         pattern: clockScene.digitPattern[clockScene.time[7]] || clockScene.blankPattern
+        dotSize: 8
+        spacing: 2
     }
 
     TapHandler {

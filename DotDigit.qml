@@ -3,8 +3,8 @@ import QtQuick
 Grid {
     id: digitGrid
 
-    width: 86
-    height: 122
+    width: columns * dotSize + (columns - 1) * spacing
+    height: 7 * dotSize + 6 * spacing
     columns: 5
     spacing: 4
 
@@ -17,6 +17,10 @@ Grid {
             required property int index
 
             lit: digitGrid.pattern[index] === "1"
+
+            width: digitGrid.dotSize
         }
     }
+
+    property int dotSize: 14
 }
