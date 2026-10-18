@@ -2,7 +2,7 @@ import QtQuick
 
 Rectangle {
     width: 480
-    height: 240
+    height: 360
     color: "black"
 
     Text {
@@ -12,30 +12,29 @@ Rectangle {
         anchors.centerIn: parent
     }
 
-    Grid {
+    DotDigit {
         x: 20
         y: 20
-        columns: 5
-        spacing: 4
-        Repeater {
-            model: 35
-            delegate: Dot {
-                required property int index
-                property int rowIndex: Math.floor(index / digitGrid.columns)
-                property int columnIndex: index % digitGrid.columns
-                lit: digitGrid.pattern[index] === "1"
-            }
-        }
-        id: digitGrid
-        property var pattern:   "01110"
-                              + "10001"
-                              + "10001"
-                              + "10001"
-                              + "10001"
-                              + "10001"
-                              + "01110"
+        pattern: "01110"
+               + "10001"
+               + "10001"
+               + "10001"
+               + "10001"
+               + "10001"
+               + "01110"
     }
 
+    DotDigit {
+        x: 130
+        y: 20
+        pattern: "11111"
+               + "11111"
+               + "11111"
+               + "11111"
+               + "11111"
+               + "11111"
+               + "11111"
+    }
 
     TapHandler {
         onTapped: (eventpoint, button) => console.log("Clock clicked")
