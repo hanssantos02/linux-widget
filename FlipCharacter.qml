@@ -5,6 +5,8 @@ Rectangle {
 
     property string character: " "
     property string displayedCharacter: " "
+    property string transitionCharacter: " "
+    property bool initialized: false
 
     width: 120
     height: 160
@@ -27,7 +29,7 @@ Rectangle {
             y: 0
             width: flipTile.width
             height: flipTile.height
-            text: flipTile.character
+            text: flipTile.transitionCharacter
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             color: "white"
@@ -100,7 +102,7 @@ Rectangle {
             y: -parent.height
             width: flipTile.width
             height: flipTile.height
-            text: flipTile.character
+            text: flipTile.transitionCharacter
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             color: "white"
@@ -187,22 +189,35 @@ Rectangle {
         }
 
         onFinished: {
-            flipTile.displayedCharacter = flipTile.character
+            flipTile.displayedCharacter = flipTile.transitionCharacter
             upperHinge.angle = 0
             lowerHinge.angle = 90
+            Qt.callLater(flipTile.requestTransition)
         }
-    }
-
-    TapHandler {
-        onTapped: {
-            if (flipTile.character !== flipTile.displayedCharacter && !foldTest.running) {
-                foldTest.start()
-            }
-        }
-
     }
 
     Component.onCompleted: {
         flipTile.displayedCharacter = flipTile.character
+        flipTile.transitionCharacter = flipTile.character
+        flipTile.initialized = true
     }
+
+    function requestTransition() {
+        if (!flipTile.initialized) {
+            return
+        }
+
+        if (foldTest.running) {
+            return
+        }
+
+        if (flipTile.character === flipTile.displayedCharacter) {
+            return
+        }
+
+        flipTile.transitionCharacter = flipTile.character
+        foldTest.start()
+    }
+
+    onCharacterChanged: flipTile.requestTransition()
 }
