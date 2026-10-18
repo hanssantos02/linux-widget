@@ -8,7 +8,6 @@ Rectangle {
     color: "black"
 
     property string time: "--:--:--"
-    property string previewCharacter: "0"
     property var digitPattern: ({
         "0": "01110"
            + "10001"
@@ -92,16 +91,25 @@ Rectangle {
     DotDigit {
         x: 20
         y: 20
-        pattern: clockScene.digitPattern[clockScene.previewCharacter]
+        pattern: clockScene.digitPattern[clockScene.time[6]] || clockScene.blankPattern
     }
 
     DotDigit {
         x: 130
         y: 20
-        pattern: clockScene.digitPattern["1"]
+        pattern: clockScene.digitPattern[clockScene.time[7]] || clockScene.blankPattern
     }
 
     TapHandler {
         onTapped: (eventpoint, button) => console.log("Clock clicked")
     }
+
+    property string blankPattern: "00000"
+                                + "00000"
+                                + "00000"
+                                + "00000"
+                                + "00000"
+                                + "00000"
+                                + "00000"
+
 }
