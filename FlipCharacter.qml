@@ -185,9 +185,20 @@ Rectangle {
             to: 0
             duration: 400
         }
+
+        onFinished: {
+            flipTile.displayedCharacter = flipTile.character
+            upperHinge.angle = 0
+            lowerHinge.angle = 90
+        }
     }
 
     TapHandler {
-        onTapped: foldTest.restart()
+        onTapped: {
+            if (flipTile.character !== flipTile.displayedCharacter && !foldTest.running) {
+                foldTest.start()
+            }
+        }
+
     }
 }
