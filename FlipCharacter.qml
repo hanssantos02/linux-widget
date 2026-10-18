@@ -11,6 +11,7 @@ Rectangle {
     radius: 8
     color: "#202020"
 
+    // Static upper half showing the next character.
     Item {
         id: upperBack
 
@@ -35,6 +36,7 @@ Rectangle {
         }
     }
 
+    // Animated upper half showing the current character.
     Item {
         id: upperHalf
 
@@ -76,6 +78,49 @@ Rectangle {
         }
     }
 
+    // Animated lower half showing the next character.
+    Item {
+        id: lowerFlap
+
+        x: 0
+        y: flipTile.height / 2
+        z: 2
+        width: flipTile.width
+        height: flipTile.height / 2
+        clip: true
+
+        Rectangle {
+            anchors.fill: parent
+            color: flipTile.color
+            radius: flipTile.radius
+        }
+
+        Text {
+            x: 0
+            y: -parent.height
+            width: flipTile.width
+            height: flipTile.height
+            text: flipTile.character
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            color: "white"
+            font.pixelSize: 112
+            font.bold: true
+        }
+
+        transform: Rotation {
+            id: lowerHinge
+
+            origin.x: lowerFlap.width / 2
+            origin.y: 0
+            axis.x: 1
+            axis.y: 0
+            axis.z: 0
+            angle: 90
+        }
+    }
+
+    // Static lower half showing the current character.
     Item {
         id: lowerHalf
 
@@ -99,6 +144,7 @@ Rectangle {
         }
     }
 
+    // Center seam.
     Rectangle {
         x: 0
         y: flipTile.height / 2 - height / 2
@@ -108,14 +154,37 @@ Rectangle {
         color: "#080808"
     }
 
-    NumberAnimation {
+    // Fold the upper half away, then unfold the lower half.
+    SequentialAnimation {
         id: foldTest
 
-        target: upperHinge
-        property: "angle"
-        from: 0
-        to: -90
-        duration: 800
+        PropertyAction {
+            target: upperHinge
+            property: "angle"
+            value: 0
+        }
+
+        PropertyAction {
+            target: lowerHinge
+            property: "angle"
+            value: 90
+        }
+
+        NumberAnimation {
+            target: upperHinge
+            property: "angle"
+            from: 0
+            to: -90
+            duration: 400
+        }
+
+        NumberAnimation {
+            target: lowerHinge
+            property: "angle"
+            from: 90
+            to: 0
+            duration: 400
+        }
     }
 
     TapHandler {
