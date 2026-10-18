@@ -14,7 +14,7 @@ Rectangle {
     }
 
     FlipCharacter {
-        character: "4"
+        character: "7"
         anchors.centerIn: parent
     }
 }

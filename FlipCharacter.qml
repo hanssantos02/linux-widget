@@ -4,7 +4,7 @@ Rectangle {
     id: flipTile
 
     property string character: " "
-    property string displayedCharacter: "3"
+    property string displayedCharacter: " "
 
     width: 120
     height: 160
@@ -200,5 +200,9 @@ Rectangle {
             }
         }
 
+    }
+
+    Component.onCompleted: {
+        flipTile.displayedCharacter = flipTile.character
     }
 }
