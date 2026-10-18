@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from exercises.clock_format import format_time
 
 date_1 = datetime(2026, 10, 18, 14, 7, 9)

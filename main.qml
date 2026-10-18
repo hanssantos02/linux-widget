@@ -12,6 +12,18 @@ Rectangle {
         anchors.centerIn: parent
     }
 
+    Dot {
+        x: 20
+        y: 20
+        lit: true
+    }
+
+    Dot {
+        x: 44
+        y: 20
+        lit: false
+    }
+
     TapHandler {
         onTapped: (eventpoint, button) => console.log("Clock clicked")
     }
