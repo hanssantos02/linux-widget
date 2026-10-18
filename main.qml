@@ -79,6 +79,15 @@ Rectangle {
            + "00001"
            + "00001"
            + "01110"
+        ,
+        ":": "00000"
+           + "00100"
+           + "00100"
+           + "00000"
+           + "00100"
+           + "00100"
+           + "00000"
+
     })
 
     Text {
@@ -88,18 +97,19 @@ Rectangle {
         anchors.centerIn: parent
     }
 
-    DotDigit {
-        x: 20
-        y: 20
-        pattern: clockScene.digitPattern[clockScene.time[6]] || clockScene.blankPattern
-    }
-
-    DotDigit {
-        x: 130
-        y: 20
-        pattern: clockScene.digitPattern[clockScene.time[7]] || clockScene.blankPattern
-        dotSize: 8
-        spacing: 2
+    Row {
+        spacing: 6
+        y:30
+        anchors.horizontalCenter: parent.horizontalCenter
+        Repeater {
+            model: 8
+            delegate: DotDigit {
+                required property int index
+                dotSize: 8
+                spacing: 2
+                pattern: clockScene.digitPattern[clockScene.time[index]] || clockScene.blankPattern
+            }
+        }
     }
 
     TapHandler {
