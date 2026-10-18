@@ -8,6 +8,15 @@ Rectangle {
     color: "black"
 
     property string time: "--:--:--"
+
+    property string blankPattern: "00000"
+                                + "00000"
+                                + "00000"
+                                + "00000"
+                                + "00000"
+                                + "00000"
+                                + "00000"
+
     property var digitPattern: ({
         "0": "01110"
            + "10001"
@@ -78,8 +87,7 @@ Rectangle {
            + "01111"
            + "00001"
            + "00001"
-           + "01110"
-        ,
+           + "01110",
         ":": "00000"
            + "00100"
            + "00100"
@@ -87,41 +95,37 @@ Rectangle {
            + "00100"
            + "00100"
            + "00000"
-
     })
-
-    Text {
-        text: clockScene.time
-        color: "white"
-        font.pixelSize: 28
-        anchors.centerIn: parent
-    }
-
-    Row {
-        spacing: 6
-        y:30
-        anchors.horizontalCenter: parent.horizontalCenter
-        Repeater {
-            model: 8
-            delegate: DotDigit {
-                required property int index
-                dotSize: 8
-                spacing: 2
-                pattern: clockScene.digitPattern[clockScene.time[index]] || clockScene.blankPattern
-            }
-        }
-    }
 
     TapHandler {
         onTapped: (eventpoint, button) => console.log("Clock clicked")
     }
 
-    property string blankPattern: "00000"
-                                + "00000"
-                                + "00000"
-                                + "00000"
-                                + "00000"
-                                + "00000"
-                                + "00000"
+    Column {
+        anchors.centerIn: parent
+        spacing: 20
 
+        Row {
+            spacing: 6
+
+            Repeater {
+                model: 8
+
+                delegate: DotDigit {
+                    required property int index
+
+                    dotSize: 8
+                    spacing: 2
+                    pattern: clockScene.digitPattern[clockScene.time[index]] || clockScene.blankPattern
+                }
+            }
+        }
+
+        Text {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: clockScene.time
+            color: "white"
+            font.pixelSize: 28
+        }
+    }
 }
