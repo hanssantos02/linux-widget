@@ -123,9 +123,10 @@ Rectangle {
 
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: clockScene.time
-            color: "white"
-            font.pixelSize: 28
+            text: clockScene.time.slice(9)
+            color: "#b8b8b8"
+            font.pixelSize: 18
+            visible: text.length > 0
         }
     }
 }
