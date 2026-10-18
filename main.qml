@@ -8,7 +8,6 @@ Rectangle {
     color: "black"
 
     property string time: "--:--:--"
-    property string previewCharacter: "3"
 
     TapHandler {
         onTapped: (eventpoint, button) => console.log("Clock clicked")
@@ -17,30 +16,17 @@ Rectangle {
     FlipCharacter {
         id: previewTile
 
-        character: clockScene.previewCharacter
+        character: clockScene.time[7]
         anchors.centerIn: parent
     }
 
-    Rectangle {
-        width: 140
-        height: 40
-        radius: 4
-        color: "#303030"
-        anchors.left: previewTile.right
-        anchors.leftMargin: 16
-        anchors.verticalCenter: parent.verticalCenter
+    Text {
+        color: "white"
+        text: clockScene.time
+        font.pixelSize: 18
 
-        Text {
-            anchors.centerIn: parent
-            color: "white"
-            font.pixelSize: 16
-            text: "Target: " + clockScene.previewCharacter
-        }
-
-        TapHandler {
-            onTapped: (eventpoint, button) => {
-                clockScene.previewCharacter = clockScene.previewCharacter === "3" ? "4" : "3"
-            }
-        }
+        anchors.top: previewTile.bottom
+        anchors.topMargin: 16
+        anchors.horizontalCenter: parent.horizontalCenter
     }
 }
