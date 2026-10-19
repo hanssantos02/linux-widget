@@ -47,3 +47,26 @@ Final renders: [plain rollover](../assets/verification/flip-rollover-2026-10-19-
 The actual request times were observed through property-change signals because the saved request functions do not yet print their values. The source schedules the two requests independently at 2000 and 2200 ms; the observed running-state check confirms this run really exercised busy arrival. Timer delivery is approximate, and a heavily stalled event loop can change that relationship.
 
 These checks establish state coordination and settled software-rendered appearance. They do not establish native compositor animation quality, frame rate, GPU cost or smooth resizing. Product rendering-cost measurement and a visible responsiveness observation remain the next check; no independent learner testing or observation is inferred from the mentor's execution.
+
+## Resource baseline and visible responsiveness — 2026-10-19
+
+The learner reported completion and explicitly delegated the notes to the mentor. Source review confirms `run_transitions = True` guards both prepared request schedules, while the six-second quit remains unconditional. Both request functions now print their published values. The saved launcher was left unchanged.
+
+No terminal measurements or specific visual observations from the learner were available in the chat. The following numbers were therefore measured by the mentor, not attributed to the learner.
+
+### Mentor-measured offscreen baseline
+
+Both runs used the same launcher and Qt offscreen/software backend. A temporary review wrapper changed only the run_transitions value in memory for the idle case, checked the app.exec return value and final requested time, and otherwise executed the saved source. GNU Time measured the whole process, including Python/Qt startup and the small review wrapper. Runs were sequential, without resize work.
+
+| Mode | Elapsed seconds | User CPU seconds | System CPU seconds | Total CPU seconds | Peak RSS, GNU Time KB | Exit |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Idle, transitions disabled in memory | 6.23 | 0.15 | 0.02 | 0.17 | 70932 | 0; final request 11:59:59 PM |
+| Prepared transitions enabled | 6.05 | 0.28 | 0.03 | 0.31 | 71224 | 0; final request 12:00:03 AM |
+
+The transition run printed both 12:00:00 AM and 12:00:03 AM. CPU time is much smaller than the roughly six-second process lifetime because waiting is not processor work. This single pair showed 0.14 seconds more process CPU time and 292 KB more peak RSS with transitions enabled; short-run noise, startup and renderer differences prevent treating those deltas as an isolated animation cost or a performance guarantee. No optimization is justified from this pair alone.
+
+This is an offscreen/software baseline. It does not measure the learner's native window-system rendering path, GPU usage, frame rate or frame pacing. The learner's generic completion report is recorded, but there is no specific supplied resize/close-during-motion observation to quote; that visual observation remains unverified rather than being invented in these notes.
+
+### Functional milestone review
+
+Milestone 06 is accepted as the local normal-window split-flap prototype on 2026-10-19: reusable aligned character halves, captured two-stage folds, startup initialization, automatic changes, latest-request catch-up, a complete live time row, optional format marker and repeatable prepared-input checks are implemented. Four isolated state cases and full-row rollover/busy-arrival checks pass; settled offscreen renders were inspected. The student-authored prepared-input launcher and static-separator extension provide practical transfer evidence. Independent retention, native motion/resize assessment and longer-running resource profiling remain review items, including milestone 14; acceptance does not imply universal desktop support or measured native animation smoothness.

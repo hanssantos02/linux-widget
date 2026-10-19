@@ -6,12 +6,15 @@ from PySide6.QtQuick import QQuickView
 def request_rollover():
     root = window.rootObject()
     root.setProperty("time", "12:00:00 AM")
+    print("12:00:00 AM")
 
 
 def request_latest():
     root = window.rootObject()
     root.setProperty("time", "12:00:03 AM")
+    print("12:00:03 AM")
 
+run_transitions = True
 
 app = QGuiApplication()
 window = QQuickView()
@@ -25,7 +28,8 @@ window.setTitle("Split-flap rollover check")
 window.setMinimumSize(QSize(1100, 240))
 window.show()
 timer = QTimer()
-timer.singleShot(2000, request_rollover)
-timer.singleShot(2200, request_latest)
+if run_transitions:
+    timer.singleShot(2000, request_rollover)
+    timer.singleShot(2200, request_latest)
 timer.singleShot(6000, app.quit)
 app.exec()
