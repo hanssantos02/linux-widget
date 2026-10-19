@@ -13,20 +13,28 @@ Rectangle {
         onTapped: (eventpoint, button) => console.log("Clock clicked")
     }
 
-    FlipCharacter {
-        id: previewTile
-
-        character: clockScene.time[7]
+    Column {
         anchors.centerIn: parent
-    }
+        spacing: 16
 
-    Text {
-        color: "white"
-        text: clockScene.time
-        font.pixelSize: 18
+        Row {
+            spacing: 12
 
-        anchors.top: previewTile.bottom
-        anchors.topMargin: 16
-        anchors.horizontalCenter: parent.horizontalCenter
+            Repeater {
+                model: 8
+                delegate: FlipCharacter {
+                    required property int index
+                    character: clockScene.time[index]
+                }
+            }
+        }
+
+        Text {
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            color: "white"
+            text: clockScene.time
+            font.pixelSize: 18
+        }
     }
 }
