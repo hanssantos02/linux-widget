@@ -1,3 +1,5 @@
+import math
+
 class TimerController:
     def __init__(self, focus_duration_seconds=1500, break_duration_seconds=300):
         self.focus_duration_seconds = focus_duration_seconds
@@ -32,3 +34,20 @@ class TimerController:
         if self.status != "paused":
             return
         self.status = "running"
+
+    def reset(self):
+        self.phase = "focus"
+        self.status = "ready"
+        self.remaining_time = self.focus_duration_seconds
+
+    @property
+    def remaining_seconds(self):
+        return max(0, math.ceil(self.remaining_time))
+
+    @property
+    def phase_duration_seconds(self):
+        return (
+            self.focus_duration_seconds
+            if self.phase == "focus"
+            else self.break_duration_seconds
+        )
