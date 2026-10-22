@@ -52,18 +52,6 @@ controller = TimerController(10, 4)
 bridge = TimerBridge(controller)
 observed = []
 
-def record_state():
-    observed.append((
-        bridge.phase,
-        bridge.status,
-        bridge.remainingSeconds,
-        bridge.phaseDurationSeconds,
-        bridge.focusDurationSeconds,
-        bridge.breakDurationSeconds
-    ))
-
-bridge.stateChanged.connect(record_state)
-
 bridge._publish_state()
 
 controller.start()
@@ -97,4 +85,59 @@ assert bridge.status == "ready"
 assert bridge.remainingSeconds == 10
 assert len(observed) == 0
 bridge._publish_state()
+
+
+
+clock_state["now"] = 0.0
+controller = TimerController(10, 4)
+bridge = TimerBridge(controller, clock=fake_clock)
+observed = []
+
+def record_state():
+    observed.append((
+        bridge.status,
+        bridge.remainingSeconds
+    ))
+bridge.stateChanged.connect(record_state)
+
+clock_state["now"] = 5
+bridge.start()
+
+assert bridge.status == "running"
+assert bridge.remainingSeconds == 10
+assert len(observed) == 1
+assert observed[-1] == ("running", 10)
+
+clock_state["now"] = 8
+bridge.pause()
+
+assert bridge.status == "paused"
+assert bridge.remainingSeconds == 7
+assert len(observed) == 2
+assert observed[-1] == ("paused", 7)
+
+clock_state["now"] = 13
+bridge.resume()
+
+assert bridge.status == "running"
+assert bridge.remainingSeconds == 7
+assert len(observed) == 3
+assert observed[-1] == ("running", 7)
+
+clock_state["now"] = 15
+bridge.refresh()
+
+assert bridge.status == "running"
+assert bridge.remainingSeconds == 5
+assert len(observed) == 4
+assert observed[-1] == ("running", 5)
+
+clock_state["now"] = 16
+bridge.reset()
+
+assert bridge.status == "ready"
+assert bridge.remainingSeconds == 10
+assert len(observed) == 5
+assert observed[-1] == ("ready", 10)
+
 print("pass")
