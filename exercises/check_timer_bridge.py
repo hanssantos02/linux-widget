@@ -46,7 +46,6 @@ assert bridge.remainingSeconds == 4
 assert bridge.phaseDurationSeconds == 4
 assert bridge.focusDurationSeconds == 10
 assert bridge.breakDurationSeconds == 4
-print(bridge.property("remainingSeconds"))
 
 
 controller = TimerController(10, 4)
@@ -83,6 +82,19 @@ bridge._publish_state()
 
 controller.reset()
 bridge._publish_state()
-print("Notification count:", len(observed))
 
+
+clock_state = {"now": 0.0}
+
+def fake_clock():
+    return clock_state["now"]
+
+controller = TimerController(10, 4)
+bridge = TimerBridge(controller, clock=fake_clock)
+observed = []
+assert bridge.phase == "focus"
+assert bridge.status == "ready"
+assert bridge.remainingSeconds == 10
+assert len(observed) == 0
+bridge._publish_state()
 print("pass")

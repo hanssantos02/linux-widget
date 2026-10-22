@@ -1,3 +1,5 @@
+from time import monotonic
+
 from PySide6.QtCore import QObject, Property, Signal
 
 from timer_controller import TimerController
@@ -6,13 +8,15 @@ from timer_controller import TimerController
 class TimerBridge(QObject):
     stateChanged = Signal()
 
-    def __init__(self, controller=None, parent=None):
+    def __init__(self, controller=None, parent=None, clock=monotonic):
         super().__init__(parent)
 
         if controller is None:
             controller = TimerController()
         self._controller = controller
         self._snapshot = self._read_state()
+        self._clock = clock
+        self._last_reading = self._clock()
 
     def _read_state(self):
         return {
@@ -30,6 +34,17 @@ class TimerBridge(QObject):
             return
         self._snapshot = state
         self.stateChanged.emit()
+
+    def _sync_elapsed(self):
+        now = self._clock()
+        elapsed = now - self._last_reading
+        self._last_reading = now
+        self._controller.update(elapsed)
+
+    def refresh(self):
+        self._sync_elapsed()
+        self._publish_state()
+
 
     @Property(str, notify=stateChanged)
     def phase(self):
