@@ -24,6 +24,13 @@ class TimerBridge(QObject):
             "breakDurationSeconds": self._controller.break_duration_seconds,
         }
 
+    def _publish_state(self):
+        state = self._read_state()
+        if self._snapshot == state:
+            return
+        self._snapshot = state
+        self.stateChanged.emit()
+
     @Property(str, notify=stateChanged)
     def phase(self):
         return self._snapshot["phase"]

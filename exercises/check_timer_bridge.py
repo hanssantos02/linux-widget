@@ -47,4 +47,42 @@ assert bridge.phaseDurationSeconds == 4
 assert bridge.focusDurationSeconds == 10
 assert bridge.breakDurationSeconds == 4
 print(bridge.property("remainingSeconds"))
+
+
+controller = TimerController(10, 4)
+bridge = TimerBridge(controller)
+observed = []
+
+def record_state():
+    observed.append((
+        bridge.phase,
+        bridge.status,
+        bridge.remainingSeconds,
+        bridge.phaseDurationSeconds,
+        bridge.focusDurationSeconds,
+        bridge.breakDurationSeconds
+    ))
+
+bridge.stateChanged.connect(record_state)
+
+bridge._publish_state()
+
+controller.start()
+bridge._publish_state()
+
+controller.update(0.25)
+bridge._publish_state()
+
+controller.update(0.75)
+bridge._publish_state()
+
+controller.update(9)
+bridge._publish_state()
+
+bridge._publish_state()
+
+controller.reset()
+bridge._publish_state()
+print("Notification count:", len(observed))
+
 print("pass")
