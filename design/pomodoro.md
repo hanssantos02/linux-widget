@@ -66,3 +66,64 @@ Use the test configuration and synthetic elapsed times:
 ## Computer-sleep policy
 
 **Exclude computer sleep from an active period.** On waking, retain the remaining time from just before sleep and continue counting only awake, running time. Paused time is also excluded. The clock implementation must support this policy rather than treating time spent asleep as elapsed countdown time.
+
+## Qt bridge proposal
+
+**Name:** `TimerBridge` (Python `QObject`).
+
+**Job:** Adapt `TimerController` to QML by forwarding button actions, supplying eligible elapsed time and publishing a coherent, read-only view of the core state.
+
+### Ownership and timing
+
+The bridge accepts an existing `TimerController` or creates one with the configured focus and break durations. The core remains the sole owner of timer rules, precise remaining time and phase transitions; the bridge reads its state and never maintains a second countdown.
+
+The bridge owns a parented `QTimer`, the last clock reading (the monotonic baseline) and a configurable refresh interval, initially **100 ms**. The interval controls refresh frequency, not the amount deducted: each refresh uses measured elapsed time. The `QTimer` may remain active in ready and paused states because the core ignores elapsed time in those states.
+
+Inject a clock callable returning monotonic seconds. In production, its readings must exclude computer sleep, or a clock adapter must remove suspended time using platform sleep/wake information. An arbitrary monotonic clock is not sufficient if it includes sleep. The `QTimer` itself is only a wake-up source, not a clock. Initialize the baseline from the supplied clock when the bridge is created.
+
+### QML surface
+
+Expose these read-only Qt properties, each sourced from the corresponding core value:
+
+| QML property | Source on `TimerController` |
+|---|---|
+| `phase` | Current `phase`: `focus` or `break`. |
+| `status` | Current `status`: `ready`, `running` or `paused`. |
+| `remainingSeconds` | Core's published integer remaining time, `max(0, ceil(remaining_time))`. |
+| `phaseDurationSeconds` | Configured duration of the core's current phase. |
+| `focusDurationSeconds` | Configured focus duration. |
+| `breakDurationSeconds` | Configured break duration. |
+
+Expose four no-argument QML slots: `start()`, `pause()`, `resume()` and `reset()`. These delegate to the corresponding core actions; `update(elapsed_seconds)` is internal and is not exposed as a button action.
+
+### Operation order
+
+Handle refreshes and actions serially on the bridge's Qt thread.
+
+For each periodic refresh:
+
+1. Read the clock once and calculate eligible elapsed time since the baseline.
+2. Move the baseline to that reading **before** calling the core.
+3. Call `controller.update(elapsed_seconds)`. The core counts time only while running and performs any zero transition, discarding excess elapsed time.
+4. Read and publish the complete resulting state.
+
+For each user action:
+
+1. Read the clock once, calculate eligible elapsed time and move the baseline to that reading.
+2. Call `controller.update(elapsed_seconds)` **before** applying Start, Pause, Resume or Reset, even if the action would otherwise be inapplicable.
+3. Apply the requested core action against the state resulting from that update. If the interval completed a phase, the action therefore applies to the next, ready phase. For example, Start can start that phase; Pause is ignored there.
+4. Read and publish the complete resulting state.
+
+Updating the baseline for every operation ensures that ready or paused time cannot be charged to a later running interval. Do not publish an intermediate state between the elapsed-time update and the action.
+
+### Change notification and startup
+
+Use a shared `stateChanged` signal as the Qt NOTIFY signal for all six properties. After each operation, collect all six core values into one snapshot, compare it with the previously published snapshot, and replace the whole snapshot before emitting the signal. Property getters read that snapshot, so QML always sees mutually consistent values. This snapshot is a presentation cache, not another timer model. If none of the published values changed, no notification is needed, even if the core's fractional remaining time changed.
+
+For a newly created core, initialize the snapshot to `focus / ready` with the full focus duration: 1,500 seconds normally or 10 seconds in the test configuration. Starting the refresh `QTimer` does not start the countdown; the core waits for Start. If a core is supplied, publish its existing state rather than resetting it.
+
+### Clock-driven test example
+
+A test can inject a callable that returns a mutable fake clock reading, advance that reading explicitly and invoke the refresh handler or a button slot without sleeping or waiting for a real `QTimer` timeout.
+
+With the 10-second focus configuration and an initial fake reading of 0: Start at 0; Pause at 3 must first account for three seconds and publish `focus / paused` with 7 seconds remaining. Resume at 8 must leave 7 seconds remaining, excluding the five paused seconds. A refresh at 10 must publish `focus / running` with 5 seconds remaining. This checks elapsed-time accounting at actions as well as the fresh baseline on resume.
