@@ -77,67 +77,88 @@ clock_state = {"now": 0.0}
 def fake_clock():
     return clock_state["now"]
 
-controller = TimerController(10, 4)
-bridge = TimerBridge(controller, clock=fake_clock)
-observed = []
-assert bridge.phase == "focus"
-assert bridge.status == "ready"
-assert bridge.remainingSeconds == 10
-assert len(observed) == 0
-bridge._publish_state()
-
-
 
 clock_state["now"] = 0.0
 controller = TimerController(10, 4)
 bridge = TimerBridge(controller, clock=fake_clock)
 observed = []
-
 def record_state():
     observed.append((
+        bridge.phase,
         bridge.status,
-        bridge.remainingSeconds
+        bridge.remainingSeconds,
+        bridge.phaseDurationSeconds
     ))
 bridge.stateChanged.connect(record_state)
 
-clock_state["now"] = 5
+clock_state["now"] = 0
 bridge.start()
 
+assert bridge.phase == "focus"
 assert bridge.status == "running"
 assert bridge.remainingSeconds == 10
+assert bridge.phaseDurationSeconds == 10
 assert len(observed) == 1
-assert observed[-1] == ("running", 10)
+assert observed[-1] == ("focus", "running", 10, 10)
 
-clock_state["now"] = 8
+clock_state["now"] = 10
 bridge.pause()
 
-assert bridge.status == "paused"
-assert bridge.remainingSeconds == 7
+assert bridge.phase == "break"
+assert bridge.status == "ready"
+assert bridge.remainingSeconds == 4
+assert bridge.phaseDurationSeconds == 4
 assert len(observed) == 2
-assert observed[-1] == ("paused", 7)
+assert observed[-1] == ("break", "ready", 4, 4)
 
-clock_state["now"] = 13
+clock_state["now"] = 10
 bridge.resume()
 
+assert bridge.phase == "break"
+assert bridge.status == "ready"
+assert bridge.remainingSeconds == 4
+assert bridge.phaseDurationSeconds == 4
+assert len(observed) == 2
+assert observed[-1] == ("break", "ready", 4, 4)
+
+clock_state["now"] = 10
+bridge.start()
+
+assert bridge.phase == "break"
 assert bridge.status == "running"
-assert bridge.remainingSeconds == 7
+assert bridge.remainingSeconds == 4
+assert bridge.phaseDurationSeconds == 4
 assert len(observed) == 3
-assert observed[-1] == ("running", 7)
+assert observed[-1] == ("break", "running", 4, 4)
 
 clock_state["now"] = 15
-bridge.refresh()
+bridge.start()
 
+assert bridge.phase == "focus"
 assert bridge.status == "running"
-assert bridge.remainingSeconds == 5
+assert bridge.remainingSeconds == 10
+assert bridge.phaseDurationSeconds == 10
 assert len(observed) == 4
-assert observed[-1] == ("running", 5)
+assert observed[-1] == ("focus", "running", 10, 10)
 
-clock_state["now"] = 16
+clock_state["now"] = 25
 bridge.reset()
 
+assert bridge.phase == "focus"
 assert bridge.status == "ready"
 assert bridge.remainingSeconds == 10
+assert bridge.phaseDurationSeconds == 10
 assert len(observed) == 5
-assert observed[-1] == ("ready", 10)
+assert observed[-1] == ("focus", "ready", 10, 10)
+
+clock_state["now"] = 25
+bridge.reset()
+
+assert bridge.phase == "focus"
+assert bridge.status == "ready"
+assert bridge.remainingSeconds == 10
+assert bridge.phaseDurationSeconds == 10
+assert len(observed) == 5
+assert observed[-1] == ("focus", "ready", 10, 10)
 
 print("pass")
